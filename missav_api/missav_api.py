@@ -1,10 +1,10 @@
 import os
+import asyncio
 import logging
 import traceback
 
 from base_api import BaseCore
 from functools import cached_property
-from base_api.modules import consts as bs_consts
 from base_api.modules.progress_bars import Callback
 
 try:
@@ -13,7 +13,6 @@ try:
 except (ModuleNotFoundError, ImportError):
     from .modules.consts import *
 
-bs_consts.HEADERS = HEADERS
 core = BaseCore()
 logging.basicConfig(format='%(name)s %(levelname)s %(asctime)s %(message)s', datefmt='%I:%M:%S %p')
 logger = logging.getLogger("MISSAV API")
@@ -24,9 +23,15 @@ def disable_logging():
 
 
 class Video:
-    def __init__(self, url: str) -> None:
+    def __init__(self, url, content) -> None:
         self.url = url
-        self.content = core.fetch(url)
+        self.content = content
+
+    @classmethod
+    async def create(cls, url: str):
+        """Factory method to create a Video object asynchronously"""
+        content = await core.fetch(url)  # Fetch the content asynchronously
+        return cls(url, content)  # Pass `content` to the `__init__` method
 
     @cached_property
     def title(self) -> str:
@@ -53,19 +58,18 @@ class Video:
         logging.debug(f"Final URL: {url}")
         return url
 
-
-    def get_segments_(self, quality: str) -> list:
+    async def get_segments_(self, quality: str) -> list:
         """Returns the list of HLS segments for a given quality"""
-        return core.get_segments(quality=quality, m3u8_url_master=self.m3u8_base_url)
+        return await core.get_segments(quality=quality, m3u8_url_master=self.m3u8_base_url)
 
-    def download(self, quality: str, downloader: str, path: str = "./", no_title=False,
+    async def download(self, quality: str, downloader: str, path: str = "./", no_title=False,
                  callback=Callback.text_progress_bar) -> bool:
         """Downloads the video from HLS"""
         if no_title is False:
             path = os.path.join(path, self.title + ".mp4")
 
         try:
-            core.download(video=self, quality=quality, path=path, callback=callback, downloader=downloader)
+            await core.download(video=self, quality=quality, path=path, callback=callback, downloader=downloader)
             return True
 
         except Exception:
@@ -77,6 +81,6 @@ class Video:
 class Client:
 
     @classmethod
-    def get_video(cls, url: str) -> Video:
+    async def get_video(cls, url: str) -> Video:
         """Returns the video object"""
-        return Video(url)
+        return await Video.create(url)
