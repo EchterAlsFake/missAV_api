@@ -87,9 +87,3 @@ class Client:
     async def get_video(cls, url: str) -> Video:
         """Returns the video object"""
         return await Video.create(url)
-
-async def main() -> None:
-    video = await Client().get_video("https://missav.com/dm59/de/gtal-036-uncensored-leak")
-    print(video.thumbnail)
-
-asyncio.run(main())
