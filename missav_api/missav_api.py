@@ -4,7 +4,7 @@ import traceback
 from base_api import BaseCore
 from functools import cached_property
 from base_api.modules.progress_bars import Callback
-import asyncio
+
 try:
     from modules.consts import *
 
