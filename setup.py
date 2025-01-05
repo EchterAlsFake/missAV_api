@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 
 setup(
-    name="missAV_api",
+    name="missAV_api-async",
     version="1.2",
     packages=find_packages(),
     install_requires=["eaf_base_api-async"],
