@@ -9,6 +9,7 @@ def test_video_attributes():
     assert isinstance(video.publish_date, str)
     assert isinstance(video.m3u8_base_url, str)
     assert isinstance(video.video_code, str)
+    assert isinstance(video.thumbnail, str)
 
 def test_download():
     assert video.download(quality="worst", downloader="threaded") is True

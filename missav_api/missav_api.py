@@ -53,6 +53,10 @@ class Video:
         logging.debug(f"Final URL: {url}")
         return url
 
+    @cached_property
+    def thumbnail(self) -> str:
+        """Returns the main video thumbnail"""
+        return f"{regex_thumbnail.search(self.content).group(1)}cover-n.jpg"
 
     def get_segments_(self, quality: str) -> list:
         """Returns the list of HLS segments for a given quality"""
@@ -62,7 +66,7 @@ class Video:
                  callback=Callback.text_progress_bar) -> bool:
         """Downloads the video from HLS"""
         if no_title is False:
-            path = os.path.join(path, self.title + ".mp4")
+            path = os.path.join(path, core.truncate(core.strip_title(self.title)) + ".mp4")
 
         try:
             core.download(video=self, quality=quality, path=path, callback=callback, downloader=downloader)
