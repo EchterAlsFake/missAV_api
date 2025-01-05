@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="missAV_api",
-    version="1.2",
+    version="1.2.1",
     packages=find_packages(),
     install_requires=["eaf_base_api"],
     author="Johannes Habel",
