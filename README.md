@@ -4,6 +4,8 @@
     <a href="https://pepy.tech/project/missAV_api"><img src="https://static.pepy.tech/badge/missAV_api" alt="Downloads"></a>
     <a href="https://github.com/EchterAlsFake/missAV_api/workflows/"><img src="https://github.com/EchterAlsFake/missAV_api/workflows/CodeQL/badge.svg" alt="CodeQL Analysis"/></a>
     <a href="https://github.com/EchterAlsFake/missAV_api/workflows/"><img src="https://github.com/EchterAlsFake/missAV_api/actions/workflows/tests.yml/badge.svg" alt="API Tests"/></a>
+    <a href="https://github.com/EchterAlsFake/missAV_api/actions/workflows/tests.yml"><img src="https://github.com/EchterAlsFake/missAV_api/actions/workflows/tests.yml/badge.svg?branch=async" alt="Async Branch API Tests">
+</a>
 </div>
 
 # Description

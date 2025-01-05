@@ -1,12 +1,10 @@
 import os
-import asyncio
 import logging
 import traceback
-
 from base_api import BaseCore
 from functools import cached_property
 from base_api.modules.progress_bars import Callback
-
+import asyncio
 try:
     from modules.consts import *
 
@@ -49,6 +47,11 @@ class Video:
         return regex_publish_date.search(self.content).group(1)
 
     @cached_property
+    def thumbnail(self) -> str:
+        """Returns the main video thumbnail"""
+        return f"{regex_thumbnail.search(self.content).group(1)}cover-n.jpg"
+
+    @cached_property
     def m3u8_base_url(self) -> str:
         """Returns the m3u8 base URL (master playlist)"""
         javascript_content = regex_m3u8_js.search(self.content).group(1)
@@ -66,7 +69,7 @@ class Video:
                  callback=Callback.text_progress_bar) -> bool:
         """Downloads the video from HLS"""
         if no_title is False:
-            path = os.path.join(path, self.title + ".mp4")
+            path = os.path.join(path, core.truncate(core.strip_title(self.title)) + ".mp4")
 
         try:
             await core.download(video=self, quality=quality, path=path, callback=callback, downloader=downloader)
@@ -84,3 +87,9 @@ class Client:
     async def get_video(cls, url: str) -> Video:
         """Returns the video object"""
         return await Video.create(url)
+
+async def main() -> None:
+    video = await Client().get_video("https://missav.com/dm59/de/gtal-036-uncensored-leak")
+    print(video.thumbnail)
+
+asyncio.run(main())
