@@ -1,3 +1,8 @@
+> [!CAUTION]
+> missav.com has been taken down by legal procedures, because it contained copyright protected content. When I made this API I did not know that. This repository is now archieved and the Pypi packages will be removed.
+> I leave the code online, so that others maybe can learn something from it. To be hoenst, I don't want to delete it, because then all my work was for nothing. 
+
+
 <h1 align="center">missAV API</h1> 
 
 <div align="center">
