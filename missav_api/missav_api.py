@@ -22,6 +22,9 @@ logger.setLevel(logging.DEBUG)
 def disable_logging():
     logger.setLevel(logging.CRITICAL)
 
+def refresh_core():
+    global core
+    core = BaseCore()
 
 class Video:
     def __init__(self, url: str) -> None:
