@@ -61,7 +61,7 @@ class Video:
         """Returns the main video thumbnail"""
         return f"{regex_thumbnail.search(self.content).group(1)}cover-n.jpg"
 
-    def get_segments_(self, quality: str) -> list:
+    def get_segments(self, quality: str) -> list:
         """Returns the list of HLS segments for a given quality"""
         return core.get_segments(quality=quality, m3u8_url_master=self.m3u8_base_url)
 
