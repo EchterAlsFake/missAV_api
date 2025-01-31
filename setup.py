@@ -3,12 +3,12 @@ from setuptools import setup, find_packages
 
 setup(
     name="missAV_api",
-    version="1.2.1",
+    version="1.3",
     packages=find_packages(),
     install_requires=["eaf_base_api"],
     author="Johannes Habel",
     author_email="EchterAlsFake@proton.me",
-    description="A Python API for the Porn Site missav.com",
+    description="A Python API for the Porn Site missav.ws",
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
     license="LGPLv3",

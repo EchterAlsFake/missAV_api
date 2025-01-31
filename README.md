@@ -1,8 +1,3 @@
-> [!CAUTION]
-> missav.com has been taken down by legal procedures, because it contained copyright protected content. When I made this API I did not know that. This repository is now archieved and the Pypi packages will be removed.
-> I leave the code online, so that others maybe can learn something from it. To be hoenst, I don't want to delete it, because then all my work was for nothing. 
-
-
 <h1 align="center">missAV API</h1> 
 
 <div align="center">
@@ -15,6 +10,13 @@
 
 # Description
 missAV API is an API for missav.com. It allows you to download videos using HLS streaming
+
+> [!CAUTION]
+> The missav.com website has been taken down by "legal procedures." The content uploaded on similar sites such as missav.ws is probably copyright protected.
+> This API is intended to allow offline usage of the content. You could also just extract the m3u8 by yourself, but it's just more time-consuming.
+
+### I EXPLICITLY FORBID YOU TO REDISTRIBUTE CONTENT DOWNLOADED THROUGH THIS API
+See: `https://avdaisukicp.com/kaizoku/index_en.html`
 
 # Disclaimer
 > [!IMPORTANT] 

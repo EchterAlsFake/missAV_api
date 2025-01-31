@@ -8,3 +8,6 @@
 - async support
 - added thumbnail attribute
 - fixed tests
+
+# 1.3
+- bringing the project back

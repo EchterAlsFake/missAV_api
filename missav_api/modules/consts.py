@@ -1,7 +1,7 @@
 import re
 
 HEADERS = {
-    "Referer": "https://missav.com/dm9/en",
+    "Referer": "https://missav.ws/dm9/en",
 }
 
 

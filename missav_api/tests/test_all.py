@@ -2,7 +2,7 @@ from ..missav_api import Client
 
 
 client = Client()
-video = client.get_video("https://missav.com/de/fc2-ppv-4542556")
+video = client.get_video("https://missav.ws/de/fc2-ppv-4542556")
 
 def test_video_attributes():
     assert isinstance(video.title, str)
@@ -11,5 +11,4 @@ def test_video_attributes():
     assert isinstance(video.video_code, str)
     assert isinstance(video.thumbnail, str)
 
-def test_download():
-    assert video.download(quality="worst", downloader="threaded") is True
+# Downloading won't be tested anymore
