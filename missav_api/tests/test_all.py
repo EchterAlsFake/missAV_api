@@ -2,7 +2,7 @@ from ..missav_api import Client
 
 
 client = Client()
-video = client.get_video("https://missav.ws/de/fc2-ppv-4542556")
+video = client.get_video("https://missav.ws/dm13/de/fc2-ppv-2777644")
 
 def test_video_attributes():
     assert isinstance(video.title, str)
