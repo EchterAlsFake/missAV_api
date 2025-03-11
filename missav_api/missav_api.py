@@ -4,6 +4,7 @@ import traceback
 
 from base_api import BaseCore
 from functools import cached_property
+from base_api.base import setup_logger
 from base_api.modules import consts as bs_consts
 from base_api.modules.progress_bars import Callback
 
@@ -15,21 +16,23 @@ except (ModuleNotFoundError, ImportError):
 
 bs_consts.HEADERS = HEADERS
 core = BaseCore()
-logging.basicConfig(format='%(name)s %(levelname)s %(asctime)s %(message)s', datefmt='%I:%M:%S %p')
-logger = logging.getLogger("MISSAV API")
-logger.setLevel(logging.DEBUG)
 
-def disable_logging():
-    logger.setLevel(logging.CRITICAL)
 
-def refresh_core():
+def refresh_core(enable_logging=False, level=None, log_file: str = None):
     global core
     core = BaseCore()
+    if enable_logging:
+        core.enable_logging(log_file=log_file, level=level)
+
 
 class Video:
     def __init__(self, url: str) -> None:
         self.url = url
+        self.logger = setup_logger(name="MISSAV API - [Video]", log_file=None, level=logging.CRITICAL)
         self.content = core.fetch(url)
+
+    def enable_logging(self, level, log_file: str = None):
+        self.logger = setup_logger(name="MISSAV API - [Video]", log_file=log_file, level=level)
 
     @cached_property
     def title(self) -> str:
@@ -51,9 +54,9 @@ class Video:
         """Returns the m3u8 base URL (master playlist)"""
         javascript_content = regex_m3u8_js.search(self.content).group(1)
         url_parts = javascript_content.split("|")[::-1]
-        logging.debug(f"Constructing HLS URL from: {url_parts}")
+        self.logger.debug(f"Constructing HLS URL from: {url_parts}")
         url = f"{url_parts[1]}://{url_parts[2]}.{url_parts[3]}/{url_parts[4]}-{url_parts[5]}-{url_parts[6]}-{url_parts[7]}-{url_parts[8]}/playlist.m3u8"
-        logging.debug(f"Final URL: {url}")
+        self.logger.debug(f"Final URL: {url}")
         return url
 
     @cached_property
@@ -77,7 +80,7 @@ class Video:
 
         except Exception:
             error = traceback.format_exc()
-            logger.error(error)
+            self.logger.error(error)
             return False
 
 
