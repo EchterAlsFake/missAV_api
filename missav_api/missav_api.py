@@ -5,8 +5,8 @@ import traceback
 from base_api import BaseCore
 from functools import cached_property
 from base_api.base import setup_logger
-from base_api.modules import consts as bs_consts
 from base_api.modules.progress_bars import Callback
+from base_api.modules import config
 
 try:
     from modules.consts import *
@@ -14,16 +14,20 @@ try:
 except (ModuleNotFoundError, ImportError):
     from .modules.consts import *
 
-bs_consts.HEADERS = HEADERS
+HEADERS = HEADERS
 core = BaseCore()
 
 
-def refresh_core(enable_logging=False, level=None, log_file: str = None):
+def refresh_core(custom_config=None, enable_logging=False, level=None, log_file: str = None):
     global core
-    core = BaseCore()
+    cfg = custom_config or config.config
+    cfg.headers = HEADERS
+    core = BaseCore(cfg)
+
     if enable_logging:
         core.enable_logging(log_file=log_file, level=level)
 
+refresh_core()
 
 class Video:
     def __init__(self, url: str) -> None:
