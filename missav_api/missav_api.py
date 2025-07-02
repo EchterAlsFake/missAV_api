@@ -14,26 +14,13 @@ try:
 except (ModuleNotFoundError, ImportError):
     from .modules.consts import *
 
-HEADERS = HEADERS
-core = BaseCore()
-
-
-def refresh_core(custom_config=None, enable_logging=False, level=None, log_file: str = None):
-    global core
-    cfg = custom_config or config.config
-    cfg.headers = HEADERS
-    core = BaseCore(cfg)
-
-    if enable_logging:
-        core.enable_logging(log_file=log_file, level=level)
-
-refresh_core()
 
 class Video:
-    def __init__(self, url: str) -> None:
+    def __init__(self, url: str, core = None) -> None:
         self.url = url
+        self.core = core
         self.logger = setup_logger(name="MISSAV API - [Video]", log_file=None, level=logging.CRITICAL)
-        self.content = core.fetch(url)
+        self.content = self.core.fetch(url)
 
     def enable_logging(self, level, log_file: str = None):
         self.logger = setup_logger(name="MISSAV API - [Video]", log_file=log_file, level=level)
@@ -70,16 +57,16 @@ class Video:
 
     def get_segments(self, quality: str) -> list:
         """Returns the list of HLS segments for a given quality"""
-        return core.get_segments(quality=quality, m3u8_url_master=self.m3u8_base_url)
+        return self.core.get_segments(quality=quality, m3u8_url_master=self.m3u8_base_url)
 
     def download(self, quality: str, downloader: str, path: str = "./", no_title=False,
                  callback=Callback.text_progress_bar) -> bool:
         """Downloads the video from HLS"""
         if no_title is False:
-            path = os.path.join(path, core.truncate(core.strip_title(self.title)) + ".mp4")
+            path = os.path.join(path, self.core.truncate(self.core.strip_title(self.title)) + ".mp4")
 
         try:
-            core.download(video=self, quality=quality, path=path, callback=callback, downloader=downloader)
+            self.core.download(video=self, quality=quality, path=path, callback=callback, downloader=downloader)
             return True
 
         except Exception:
@@ -89,8 +76,11 @@ class Video:
 
 
 class Client:
+    def __init__(self, core = None) -> None:
+        self.core = core or BaseCore()
+        self.core.config.headers = HEADERS
+        self.core.initialize_session()
 
-    @classmethod
-    def get_video(cls, url: str) -> Video:
+    def get_video(self, url: str) -> Video:
         """Returns the video object"""
-        return Video(url)
+        return Video(url, core=self.core)
