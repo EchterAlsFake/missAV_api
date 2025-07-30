@@ -6,7 +6,7 @@ from base_api import BaseCore
 from functools import cached_property
 from base_api.base import setup_logger
 from base_api.modules.progress_bars import Callback
-from base_api.modules import config
+from typing import Optional
 
 try:
     from modules.consts import *
@@ -16,7 +16,7 @@ except (ModuleNotFoundError, ImportError):
 
 
 class Video:
-    def __init__(self, url: str, core = None) -> None:
+    def __init__(self, url: str, core: Optional[BaseCore] = None) -> None:
         self.url = url
         self.core = core
         self.logger = setup_logger(name="MISSAV API - [Video]", log_file=None, level=logging.CRITICAL)
@@ -60,13 +60,15 @@ class Video:
         return self.core.get_segments(quality=quality, m3u8_url_master=self.m3u8_base_url)
 
     def download(self, quality: str, downloader: str, path: str = "./", no_title=False,
-                 callback=Callback.text_progress_bar) -> bool:
+                 callback=Callback.text_progress_bar,
+                 remux: bool = False, remux_callback = None) -> bool:
         """Downloads the video from HLS"""
         if no_title is False:
             path = os.path.join(path, self.core.truncate(self.core.strip_title(self.title)) + ".mp4")
 
         try:
-            self.core.download(video=self, quality=quality, path=path, callback=callback, downloader=downloader)
+            self.core.download(video=self, quality=quality, path=path, callback=callback, downloader=downloader,
+                               remux=remux, callback_remux=remux_callback)
             return True
 
         except Exception:
@@ -76,7 +78,7 @@ class Video:
 
 
 class Client:
-    def __init__(self, core = None) -> None:
+    def __init__(self, core: Optional[BaseCore] = None) -> None:
         self.core = core or BaseCore()
         self.core.config.headers = HEADERS
         self.core.initialize_session()
