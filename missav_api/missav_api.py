@@ -89,8 +89,3 @@ class Client:
     def get_video(self, url: str) -> Video:
         """Returns the video object"""
         return Video(url, core=self.core)
-
-if __name__ == "__main__":
-    client = Client()
-    video = client.get_video("https://missav.ws/dm13/de/fc2-ppv-2777644")
-    print(video.title)
