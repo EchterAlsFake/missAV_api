@@ -2,11 +2,12 @@ import os
 import logging
 import traceback
 
+from typing import Optional
 from base_api import BaseCore
 from functools import cached_property
 from base_api.base import setup_logger
+from base_api.modules.config import RuntimeConfig
 from base_api.modules.progress_bars import Callback
-from typing import Optional
 
 try:
     from modules.consts import *
@@ -19,6 +20,7 @@ class Video:
     def __init__(self, url: str, core: Optional[BaseCore] = None) -> None:
         self.url = url
         self.core = core
+        core.enable_logging(level=logging.DEBUG)
         self.logger = setup_logger(name="MISSAV API - [Video]", log_file=None, level=logging.CRITICAL)
         self.content = self.core.fetch(url)
 
@@ -78,11 +80,17 @@ class Video:
 
 
 class Client:
-    def __init__(self, core: Optional[BaseCore] = None) -> None:
-        self.core = core or BaseCore()
-        self.core.config.headers = HEADERS
-        self.core.initialize_session()
+    def __init__(self, core: Optional[BaseCore] = None):
+        self.core = core or BaseCore(config=RuntimeConfig())
+        if self.core.session is None:
+            self.core.initialize_session()
 
+        self.core.session.headers = headers
     def get_video(self, url: str) -> Video:
         """Returns the video object"""
         return Video(url, core=self.core)
+
+if __name__ == "__main__":
+    client = Client()
+    video = client.get_video("https://missav.ws/dm13/de/fc2-ppv-2777644")
+    print(video.title)
