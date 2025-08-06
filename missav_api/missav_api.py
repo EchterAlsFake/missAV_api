@@ -82,10 +82,8 @@ class Video:
 class Client:
     def __init__(self, core: Optional[BaseCore] = None):
         self.core = core or BaseCore(config=RuntimeConfig())
-        if self.core.session is None:
-            self.core.initialize_session()
+        self.core.initialize_session(headers)
 
-        self.core.session.headers = headers
     def get_video(self, url: str) -> Video:
         """Returns the video object"""
         return Video(url, core=self.core)
