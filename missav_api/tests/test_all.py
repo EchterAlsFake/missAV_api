@@ -11,4 +11,8 @@ def test_video_attributes():
     assert isinstance(video.video_code, str)
     assert isinstance(video.thumbnail, str)
 
-# Downloading won't be tested anymore
+def test_search():
+    search = client.search("stepdaughter", video_count=10)
+    for video in search:
+        assert isinstance(video.title, str)
+

@@ -7,7 +7,6 @@ import hmac
 import hashlib
 from typing import Optional
 from base_api import BaseCore
-from bs4 import BeautifulSoup
 from urllib.parse import quote
 from functools import cached_property
 from base_api.base import setup_logger
@@ -169,10 +168,10 @@ class Client(Helper):
         body = {
             "searchQuery": query,
             "count": video_count,
-            "cascadeCreate": True,  # same default as the JS client
+            "cascadeCreate": True,
             "returnProperties": return_properties,
         }
-        # remove Nones so we don’t send empty keys
+
         body = {k: v for k, v in body.items() if v is not None}
         data = _post(path=path, json_body=body, timeout=9, core=self.core)
         videos = data.get("recomms", [])

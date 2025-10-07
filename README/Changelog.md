@@ -11,3 +11,6 @@
 
 # 1.3
 - bringing the project back
+
+# 1.4.5
+- Added searching support
