@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "missAV_api"
-version = "1.4.5"
+version = "1.4.6"
 description = "A Python API for the Porn Site missav.ws"
 readme = "README.md"
 requires-python = ">=3.6"
@@ -14,6 +14,9 @@ authors = [
 ]
 dependencies = [
     "eaf_base_api",
+    "bs4",
+    "brotli",
+    "lxml",
 ]
 optional-dependencies = {av = ["av"], ffmpeg = ["ffmpeg-progress-yield"]}
 classifiers = [

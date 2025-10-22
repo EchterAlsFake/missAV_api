@@ -5,11 +5,12 @@ import traceback
 import time
 import hmac
 import hashlib
-from typing import Optional
 from base_api import BaseCore
+from bs4 import BeautifulSoup
 from urllib.parse import quote
 from functools import cached_property
-from base_api.base import setup_logger
+from typing import Optional, Generator, List
+from base_api.base import setup_logger, Helper
 from base_api.modules.config import RuntimeConfig
 from base_api.modules.progress_bars import Callback
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -67,21 +68,6 @@ class ErrorVideo:
         raise self._err
 
 
-class Helper:
-    def __init__(self, core: BaseCore):
-        super(Helper).__init__()
-        self.core = core
-
-    def _get_video(self, url: str):
-        return Video(url, core=self.core)
-
-    def _make_video_safe(self, url: str):
-        try:
-            return Video(url, core=self.core)
-        except Exception as e:
-            return ErrorVideo(url, e)
-
-
 class Video:
     def __init__(self, url: str, core: Optional[BaseCore] = None) -> None:
         self.url = url
@@ -89,6 +75,10 @@ class Video:
         self.core.enable_logging(level=logging.DEBUG)
         self.logger = setup_logger(name="MISSAV API - [Video]", log_file=None, level=logging.CRITICAL)
         self.content = self.core.fetch(url)
+        print(self.content)
+        self.soup = BeautifulSoup(self.content, "lxml")
+        _meta_div = self.soup.find("div", class_="space-y-2")
+        self.meta_divs = _meta_div.find_all("div", class_="text-secondary")
 
     def enable_logging(self, level, log_file: str = None):
         self.logger = setup_logger(name="MISSAV API - [Video]", log_file=log_file, level=level)
@@ -96,17 +86,68 @@ class Video:
     @cached_property
     def title(self) -> str:
         """Returns the title of the video. Language depends on the URL language"""
-        return regex_title.search(self.content).group(1)
+        return self.soup.find("h1", class_="text-base lg:text-lg text-nord6").text.strip()
+
+    @cached_property
+    def publish_date(self) -> str:
+        """Returns the publish date of the video"""
+        return self.meta_divs[0].find("time", class_="font-medium").text.strip()
 
     @cached_property
     def video_code(self) -> str:
         """Returns the specific video code"""
-        return regex_video_code.search(self.content).group(1)
+        return self.meta_divs[1].find("span", class_="font-medium").text.strip()
 
     @cached_property
-    def publish_date(self) -> str:
-        """Returns the publication date of the video"""
-        return regex_publish_date.search(self.content).group(1)
+    def title_original_japanese(self) -> str:
+        """Returns the original title of the video"""
+        try:
+            return self.meta_divs[2].find("span", class_="font-medium").text.strip()
+
+        except IndexError:
+            return ""
+
+    @cached_property
+    def genres(self) -> List[str]:
+        """Returns the genres of the video"""
+        try:
+            genres = []
+            a_tags = self.meta_divs[3].find_all("a")
+            for a_tag in a_tags:
+                genres.append(a_tag.text.strip())
+
+            return a_tags
+
+        except IndexError:
+            return []
+
+
+    @cached_property
+    def series(self) -> str:
+        """Returns the series of the video"""
+        try:
+            return self.meta_divs[4].find("a").text.strip()
+
+        except IndexError:
+            return ""
+
+    @cached_property
+    def manufacturer(self) -> str:
+        """Returns the manufacturer of the video"""
+        try:
+            return self.meta_divs[5].find("a").text.strip()
+
+        except IndexError:
+            return ""
+
+    @cached_property
+    def etiquette(self) -> str:
+        """Returns the etiquette of the video"""
+        try:
+            return self.meta_divs[6].find("a").text.strip()
+
+        except IndexError:
+            return ""
 
     @cached_property
     def m3u8_base_url(self) -> str:
@@ -147,16 +188,17 @@ class Video:
 
 class Client(Helper):
     def __init__(self, core: Optional[BaseCore] = None):
-        super(Client, self).__init__(core=core)
+        super(Client, self).__init__(core=core, video=Video)
         self.core = core or BaseCore(config=RuntimeConfig())
-        self.core.initialize_session(headers)
+        self.core.config.use_http2 = False # Missav doesn't support http2
+        self.core.initialize_session()
+        self.core.session.headers.update(headers)
 
     def get_video(self, url: str) -> Video:
         """Returns the video object"""
         return Video(url, core=self.core)
 
-
-    def search(self, query: str, video_count: int = 50, max_workers: int = 20):
+    def search(self, query: str, video_count: int = 50, max_workers: int = 20) -> Generator[Video, None, None]:
         """
         Mirrors: POST /search/users/{userId}/items/
         Body fields follow the snippet’s Recombee client (searchQuery, count, scenario, filter, booster, logic, etc.)
@@ -183,3 +225,7 @@ class Client(Helper):
             futures = [executor.submit(self._make_video_safe, url) for url in video_urls]
             for fut in as_completed(futures):
                 yield fut.result()
+
+client = Client()
+video = client.get_video("https://missav.ws/dm13/de/ppp-2165")
+print(video.title)
