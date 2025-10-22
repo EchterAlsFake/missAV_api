@@ -225,7 +225,3 @@ class Client(Helper):
             futures = [executor.submit(self._make_video_safe, url) for url in video_urls]
             for fut in as_completed(futures):
                 yield fut.result()
-
-client = Client()
-video = client.get_video("https://missav.ws/dm13/de/ppp-2165")
-print(video.title)
