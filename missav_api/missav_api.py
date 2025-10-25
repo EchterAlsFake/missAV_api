@@ -198,7 +198,7 @@ class Client(Helper):
         """Returns the video object"""
         return Video(url, core=self.core)
 
-    def search(self, query: str, video_count: int = 50, max_workers: int = 20) -> Generator[Video, None, None]:
+    def search(self, query: str, video_count: int = 50, max_workers: int = None) -> Generator[Video, None, None]:
         """
         Mirrors: POST /search/users/{userId}/items/
         Body fields follow the snippet’s Recombee client (searchQuery, count, scenario, filter, booster, logic, etc.)
@@ -220,6 +220,8 @@ class Client(Helper):
         video_urls = []
         for video in videos:
             video_urls.append(f"https://missav.ws/en/{video['id']}")
+
+        max_workers = max_workers or self.core.config.videos_concurrency
 
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
             futures = [executor.submit(self._make_video_safe, url) for url in video_urls]
