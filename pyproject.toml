@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "missAV_api"
-version = "1.4.6"
+version = "1.4.7"
 description = "A Python API for the Porn Site missav.ws"
 readme = "README.md"
 requires-python = ">=3.6"
