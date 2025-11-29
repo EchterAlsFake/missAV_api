@@ -2,11 +2,9 @@
 
 <div align="center">
     <a href="https://pepy.tech/project/missAV_api"><img src="https://static.pepy.tech/badge/missAV_api" alt="Downloads"></a>
-    <a href="https://pepy.tech/project/missAV_api-async"><img src="https://static.pepy.tech/badge/missAV_api-async" alt="Downloads"></a> <span style="font-size: 20px;">(Async)</span>
     <a href="https://github.com/EchterAlsFake/missAV_api/workflows/CodeQL/badge.svg" alt="CodeQL Analysis"></a>
-    <a href="https://github.com/EchterAlsFake/missAV_api/actions/workflows/sync-tests.yml/badge.svg"><img src="https://github.com/EchterAlsFake/missAV_api/actions/workflows/sync-tests.yml/badge.svg" alt="Sync API Tests"/></a>
-    <a href="https://github.com/EchterAlsFake/missAV_api/actions/workflows/async-tests.yml/badge.svg"><img src="https://github.com/EchterAlsFake/missAV_api/actions/workflows/async-tests.yml/badge.svg" alt="Async API Tests"></a>
-</div>
+    <a href="https://echteralsfake.duckdns.org/ci/missAV_api/badge.svg"><img src="https://echteralsfake.duckdns.org/ci/missAV_api/badge.svg" alt="Sync API Tests"/></a>
+    </div>
 
 # Description
 missAV API is an API for missav.com. It allows you to download videos using HLS streaming
