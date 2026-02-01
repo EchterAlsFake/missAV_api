@@ -6,26 +6,33 @@
     <a href="https://echteralsfake.me/ci/missAV_api/badge.svg"><img src="https://echteralsfake.me/ci/missAV_api/badge.svg" alt="Sync API Tests"/></a>
     </div>
 
-# Description
-missAV API is an API for missav.com. It allows you to download videos using HLS streaming
-
-> [!CAUTION]
-> The missav.com website has been taken down by "legal procedures." The content uploaded on similar sites such as missav.ws is probably copyright protected.
-> This API is intended to allow offline usage of the content. You could also just extract the m3u8 by yourself, but it's just more time-consuming.
-
-### I EXPLICITLY FORBID YOU TO REDISTRIBUTE CONTENT DOWNLOADED THROUGH THIS API
-See: `https://avdaisukicp.com/kaizoku/index_en.html`
-
 # Disclaimer
-> [!IMPORTANT] 
-> missAV API is in violation to the ToS of missav.com!
-> If you are the website owner of missav.com, contact me at my E-Mail, and I'll take this repository immediately offline.
-> EchterAlsFake@proton.me
+> [!IMPORTANT]
+> This is an unofficial and unaffiliated project. Please read the full disclaimer before use:
+> **[DISCLAIMER.md](./DISCLAIMER.md)**
+>
+> By using this project you agree to comply with the target site’s rules, copyright/licensing requirements,
+> and applicable laws. Do not use it to bypass access controls or scrape at disruptive rates.
 
-> [!NOTE]
-> This project was developed for my **[Porn Fetch](https://github.com/EchterAlsFake/Porn_Fetch)** project to support video downloading
-> from missav. Therefore, this API only has very basic and limited functionality. If you want more features, I can extend this
-> API, so don't hesitate to open an issue about it :)
+# Features
+- Fetch videos + metadata
+- Download videos
+- Search for videos
+- Built-in caching
+- Easy interface
+- Great type hinting
+- Proxy support
+- Very customizable
+
+# Supported Platforms
+This API has been tested and confirmed working on:
+
+- Windows 11 (x64) 
+- macOS Sequoia (x86_64)
+- Linux (Arch) (x86_64)
+- Android 16 (aarch64)
+
+
 # Quickstart
 
 ### Have a look at the [Documentation](https://github.com/EchterAlsFake/API_Docs/blob/master/Porn_APIs/missAV.md) for more details
@@ -61,4 +68,4 @@ Pull requests are also welcome.
 
 # License
 Licensed under the [LGPLv3](https://www.gnu.org/licenses/lgpl-3.0.en.html) License
-<br>Copyright (C) 2024-2025 Johannes Habel
+<br>Copyright (C) 2024-2026 Johannes Habel
