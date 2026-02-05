@@ -1,31 +1,39 @@
 [build-system]
-requires = ["setuptools>=61.0"]
-build-backend = "setuptools.build_meta"
+requires = ["uv_build>=0.9.18,<0.10.0"]
+build-backend = "uv_build"
 
 [project]
 name = "missAV_api"
-version = "1.4.8"
+version = "1.4.9"
 description = "A Python API for the Porn Site missav.ws"
-readme = "README.md"
-requires-python = ">=3.6"
-license = { text = "LGPLv3" }
+readme = { file = "README.md", content-type = "text/markdown" }
+requires-python = ">=3.9"
+license = "LGPL-3.0-only"
+license-files = ["LICENSE"]
 authors = [
     { name = "Johannes Habel", email = "EchterAlsFake@proton.me" }
 ]
 dependencies = [
-    "eaf_base_api",
     "bs4",
-    "brotli",
-    "lxml",
+    "eaf_base_api",
+    "m3u8",
 ]
-optional-dependencies = {av = ["av"], ffmpeg = ["ffmpeg-progress-yield"]}
+
 classifiers = [
     "License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)",
     "Programming Language :: Python",
 ]
+
+[project.optional-dependencies]
+av = ["av; python_version >= '3.10'"]
+full = ["lxml", "httpx[http2]", "httpx[socks]"] # H2 for HTTP 2.0 support, LXML for faster parsing speed, though optional :)
 
 [project.urls]
 Homepage = "https://github.com/EchterAlsFake/missAV_api"
 
 [tool.setuptools]
 packages = { find = {} }
+
+[tool.uv.build-backend]
+module-name = "missav_api"
+module-root = ""

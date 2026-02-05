@@ -20,6 +20,12 @@ DATABASE_ID = "missav-default"
 PUBLIC_TOKEN = "Ikkg568nlM51RHvldlPvc2GzZPE9R4XGzaH9Qj4zK9npbbbTly1gj9K4mgRn0QlV"
 # You can change these if you want
 
+try:
+    import lxml
+    parser = lxml
+
+except (ModuleNotFoundError, ImportError):
+    parser = "html.parser"
 
 try:
     from modules.consts import *
@@ -75,7 +81,7 @@ class Video:
         self.core.enable_logging(level=logging.DEBUG)
         self.logger = setup_logger(name="MISSAV API - [Video]", log_file=None, level=logging.CRITICAL)
         self.content = self.core.fetch(url)
-        self.soup = BeautifulSoup(self.content, "lxml")
+        self.soup = BeautifulSoup(self.content, parser)
         _meta_div = self.soup.find("div", class_="space-y-2")
         self.meta_divs = _meta_div.find_all("div", class_="text-secondary")
 
