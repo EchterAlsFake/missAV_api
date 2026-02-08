@@ -607,7 +607,7 @@ wheels = [
 
 [[package]]
 name = "missav-api"
-version = "1.4.8"
+version = "1.4.9"
 source = { editable = "." }
 dependencies = [
     { name = "bs4" },

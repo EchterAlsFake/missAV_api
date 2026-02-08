@@ -4,7 +4,7 @@ build-backend = "uv_build"
 
 [project]
 name = "missAV_api"
-version = "1.4.9"
+version = "1.5.0"
 description = "A Python API for the Porn Site missav.ws"
 readme = { file = "README.md", content-type = "text/markdown" }
 requires-python = ">=3.9"

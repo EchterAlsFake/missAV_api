@@ -21,7 +21,7 @@ PUBLIC_TOKEN = "Ikkg568nlM51RHvldlPvc2GzZPE9R4XGzaH9Qj4zK9npbbbTly1gj9K4mgRn0QlV
 
 try:
     import lxml
-    parser = lxml
+    parser = "lxml"
 
 except (ModuleNotFoundError, ImportError):
     parser = "html.parser"
