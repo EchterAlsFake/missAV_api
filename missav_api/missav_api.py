@@ -1,3 +1,4 @@
+import asyncio
 import os
 import logging
 import threading
@@ -5,14 +6,14 @@ import time
 import hmac
 import hashlib
 
+from functools import partial
 from base_api import BaseCore
 from bs4 import BeautifulSoup
 from urllib.parse import quote
 from functools import cached_property
-from typing import Optional, Generator, List
 from base_api.base import setup_logger, Helper
 from base_api.modules.config import RuntimeConfig
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from typing import Optional, List, AsyncGenerator
 
 BASE_HOST = "client-rapi-missav.recombee.com"
 DATABASE_ID = "missav-default"
@@ -51,14 +52,14 @@ def _sign_path(path: str, token: str) -> str:
                          hashlib.sha1).hexdigest()
     return unsigned + f"&frontend_sign={signature}"
 
-def _post(core, path: str, json_body: dict, timeout=9):
+async def _post(core, path: str, json_body: dict, timeout=9):
     signed_path = _sign_path(path, PUBLIC_TOKEN)
     url = f"https://{BASE_HOST}{signed_path}"
     headers = {
         "Accept": "application/json",
         "Content-Type": "application/json",
     }
-    resp = core.fetch(url, json=json_body, headers=headers, timeout=timeout, method="POST", get_response=True)
+    resp = await core.fetch(url, json=json_body, headers=headers, timeout=timeout, method="POST", get_response=True)
     return resp.json()
 
 
@@ -74,15 +75,25 @@ class ErrorVideo:
 
 
 class Video:
-    def __init__(self, url: str, core: Optional[BaseCore] = None) -> None:
+    def __init__(self, url: str, core: Optional[BaseCore] = None, html_content: str = None):
         self.url = url
         self.core = core
         self.core.enable_logging(level=logging.DEBUG)
         self.logger = setup_logger(name="MISSAV API - [Video]", log_file=None, level=logging.CRITICAL)
-        self.content = self.core.fetch(url)
+        self.content = html_content
+        self.soup = None
+
+    async def init(self) -> Video:
+        if not self.content:
+            self.content = await self.get_html_content()
+
         self.soup = BeautifulSoup(self.content, parser)
         _meta_div = self.soup.find("div", class_="space-y-2")
         self.meta_divs = _meta_div.find_all("div", class_="text-secondary")
+        return self
+
+    async def get_html_content(self):
+        return await self.core.fetch(self.url)
 
     def enable_logging(self, level, log_file: str = None):
         self.logger = setup_logger(name="MISSAV API - [Video]", log_file=log_file, level=level)
@@ -168,11 +179,11 @@ class Video:
         """Returns the main video thumbnail"""
         return f"{regex_thumbnail.search(self.content).group(1)}cover-n.jpg"
 
-    def get_segments(self, quality: str) -> list:
+    async def get_segments(self, quality: str) -> list:
         """Returns the list of HLS segments for a given quality"""
-        return self.core.get_segments(quality=quality, m3u8_url_master=self.m3u8_base_url)
+        return await self.core.get_segments(quality=quality, m3u8_url_master=self.m3u8_base_url)
 
-    def download(self, quality, path="./", callback=None, no_title=False, remux: bool = False,
+    async def download(self, quality, path="./", callback=None, no_title=False, remux: bool = False,
                  callback_remux=None, start_segment: int = 0, stop_event: Optional[threading.Event] = None,
                  segment_state_path: Optional[str] = None, segment_dir: Optional[str] = None,
                  return_report: bool = False, cleanup_on_stop: bool = True, keep_segment_dir: bool = False
@@ -196,7 +207,7 @@ class Video:
         if not no_title:
             path = os.path.join(path, f"{self.title}.mp4")
 
-        return self.core.download(video=self, quality=quality, path=path, callback=callback, remux=remux,
+        return await self.core.download(video=self, quality=quality, path=path, callback=callback, remux=remux,
                            callback_remux=callback_remux, start_segment=start_segment, stop_event=stop_event,
                            segment_state_path=segment_state_path, segment_dir=segment_dir, return_report=return_report,
                            cleanup_on_stop=cleanup_on_stop, keep_segment_dir=keep_segment_dir)
@@ -206,15 +217,14 @@ class Client(Helper):
     def __init__(self, core: Optional[BaseCore] = None):
         super(Client, self).__init__(core=core, video=Video)
         self.core = core or BaseCore(config=RuntimeConfig())
-        self.core.config.use_http2 = False # Missav doesn't support http2
         self.core.initialize_session()
         self.core.session.headers.update(headers)
 
-    def get_video(self, url: str) -> Video:
+    async def get_video(self, url: str) -> Video:
         """Returns the video object"""
-        return Video(url, core=self.core)
+        return await Video(url, core=self.core).init()
 
-    def search(self, query: str, video_count: int = 50, max_workers: int = None) -> Generator[Video, None, None]:
+    async def search(self, query: str, video_count: int = 50) -> AsyncGenerator[Video, None]:
         """
         Mirrors: POST /search/users/{userId}/items/
         Body fields follow the snippet’s Recombee client (searchQuery, count, scenario, filter, booster, logic, etc.)
@@ -231,15 +241,14 @@ class Client(Helper):
         }
 
         body = {k: v for k, v in body.items() if v is not None}
-        data = _post(path=path, json_body=body, timeout=9, core=self.core)
+        data = await _post(path=path, json_body=body, timeout=9, core=self.core)
         videos = data.get("recomms", [])
         video_urls = []
         for video in videos:
             video_urls.append(f"https://missav.ws/en/{video['id']}")
 
-        max_workers = max_workers or self.core.config.videos_concurrency
+        videos_concurrency = self.core.config.videos_concurrency
+        cubed_function = partial(very_cursed_extractor, video_urls=video_urls)
 
-        with ThreadPoolExecutor(max_workers=max_workers) as executor:
-            futures = [executor.submit(self._make_video_safe, url) for url in video_urls]
-            for fut in as_completed(futures):
-                yield fut.result()
+        async for video in self.iterator(page_urls=["https://missav.ws/en/"], extractor=cubed_function, videos_concurrency=videos_concurrency, pages_concurrency=1): # Don't ask
+            yield await video.init()

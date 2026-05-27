@@ -14,3 +14,7 @@ regex_video_code = re.compile(r'<span class="font-medium">(.*?)</span>')
 regex_publish_date = re.compile(r'class="font-medium">(.*?)</time>')
 regex_thumbnail = re.compile(r'og:image" content="(.*?)cover-n.jpg')
 regex_m3u8_js = re.compile(r"'m3u8(.*?)video")
+
+
+def very_cursed_extractor(html_content, video_urls):
+    return video_urls

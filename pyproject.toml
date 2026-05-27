@@ -4,10 +4,10 @@ build-backend = "uv_build"
 
 [project]
 name = "missAV_api"
-version = "1.5.0"
+version = "2.0"
 description = "A Python API for the Porn Site missav.ws"
 readme = { file = "README.md", content-type = "text/markdown" }
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 license = "LGPL-3.0-only"
 license-files = ["LICENSE"]
 authors = [
@@ -26,7 +26,7 @@ classifiers = [
 
 [project.optional-dependencies]
 av = ["av; python_version >= '3.10'"]
-full = ["lxml", "httpx[http2]", "httpx[socks]"] # H2 for HTTP 2.0 support, LXML for faster parsing speed, though optional :)
+full = ["lxml"] # H2 for HTTP 2.0 support, LXML for faster parsing speed, though optional :)
 
 [project.urls]
 Homepage = "https://github.com/EchterAlsFake/missAV_api"
