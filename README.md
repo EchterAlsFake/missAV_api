@@ -63,7 +63,7 @@ async def do_something():
     print(video_object.title)
     # Download the video
     
-    await video_object.download(downloader="threaded", quality="best", path="your_output_path + filename")
+    await video_object.download(quality="best", path="your_output_path + filename")
 
 # SEE DOCUMENTATION FOR MORE
 ```
