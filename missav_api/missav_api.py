@@ -120,7 +120,7 @@ class Video:
 
         return self._soup
 
-    async def init(self) -> Video:
+    async def init(self):
         if not self.content:
             self.content = await get_html_content(url=self.url, core=self.core)
 
